@@ -76,38 +76,38 @@ interface MeasurementResult {
 const ANGLES: AngleConfig[] = [
   {
     key: "front",
-    label: "正面",
-    hint: "壁から1m離れ、カメラに正面を向けて立ちます。両腕を自然に下ろしてください。",
-    icon: "↑",
+    label: "正面から",
+    hint: "胸をカメラに向けて真っすぐ立ってください。両腕は自然に下ろし、背筋を伸ばしてください。",
+    icon: "↓",
     useFor: "肩幅・腰幅・体型比率",
   },
   {
-    key: "right",
-    label: "右側面",
-    hint: "右肩をカメラに向けて立ちます。背筋を伸ばし、腕は体の前に軽く添えてください。",
-    icon: "→",
-    useFor: "バスト奥行き・姿勢",
-  },
-  {
     key: "left",
-    label: "左側面",
-    hint: "左肩をカメラに向けて立ちます。右側面と同じ姿勢で。",
-    icon: "←",
+    label: "左側面から",
+    hint: "左の脇腹をカメラに向けて立ってください。腕は体の前に軽く添えてください。",
+    icon: "→",
     useFor: "左右対称補正",
   },
   {
-    key: "frontRight",
-    label: "右斜め前",
-    hint: "カメラに対して右45度を向きます。",
-    icon: "↗",
-    useFor: "立体形状・カップ推定",
+    key: "right",
+    label: "右側面から",
+    hint: "右の脇腹をカメラに向けて立ってください。腕は体の前に軽く添えてください。",
+    icon: "←",
+    useFor: "バスト奥行き・姿勢",
   },
   {
     key: "frontLeft",
-    label: "左斜め前",
-    hint: "カメラに対して左45度を向きます。",
-    icon: "↖",
+    label: "左斜め前から",
+    hint: "左の胸がカメラに向くよう、正面から左に45度体を回して立ってください。",
+    icon: "↘",
     useFor: "左右バランス確認",
+  },
+  {
+    key: "frontRight",
+    label: "右斜め前から",
+    hint: "右の胸がカメラに向くよう、正面から右に45度体を回して立ってください。",
+    icon: "↙",
+    useFor: "立体形状・カップ推定",
   },
 ];
 
@@ -405,10 +405,20 @@ function HeightScreen({ onNext }: { onNext: (h: number) => void }) {
   const [h, setH] = useState(158);
   return (
     <div>
-      <p style={{ fontSize: 13, color: "var(--c-text2)", lineHeight: 1.7, marginBottom: 24 }}>
+      <p style={{ fontSize: 13, color: "var(--c-text2)", lineHeight: 1.7, marginBottom: 16 }}>
         5枚の写真から<strong style={{ color: "var(--c-text)" }}>ブラウザだけで</strong>採寸します。<br />
         写真は外部に送信されず、解析後すぐにメモリから削除されます。
       </p>
+      <div style={{
+        background: "var(--c-purple-light)",
+        borderRadius: 10, padding: "10px 14px",
+        fontSize: 12, color: "var(--c-purple-dark)",
+        marginBottom: 12, lineHeight: 1.8,
+      }}>
+        📱 <strong>撮影のコツ</strong><br />
+        スマホを体から離して腕をしっかり固定して撮影してください。<br />
+        カメラの高さを胸の位置に合わせると精度が上がります。
+      </div>
       <div style={{
         background: "var(--c-teal-light)",
         borderRadius: 10, padding: "10px 14px",
@@ -482,6 +492,8 @@ function ShootScreen({
         {ANGLES.map(a => {
           const isDone   = !!photos[a.key];
           const isActive = a.key === active;
+          // 正面は1列全体
+          const isFullWidth = a.key === "front";
           return (
             <div key={a.key}
               onClick={() => !isDone && setActive(a.key)}
@@ -491,7 +503,7 @@ function ShootScreen({
                 borderRadius: 10, padding: "12px 8px", textAlign: "center",
                 cursor: isDone ? "default" : "pointer",
                 transition: "all .2s",
-                gridColumn: a.key === "frontLeft" ? "span 2" : undefined,
+                gridColumn: isFullWidth ? "span 2" : undefined,
               }}
             >
               {photos[a.key]
@@ -507,7 +519,7 @@ function ShootScreen({
                 fontWeight: isDone || isActive ? 500 : 400,
               }}>{a.label}</div>
               {isDone   && <div style={{ fontSize: 10, color: "#0F6E56", marginTop: 2 }}>✓ 完了</div>}
-              {isActive && !isDone && <div style={{ fontSize: 10, color: "#534AB7", marginTop: 2 }}>← 今ここ</div>}
+              {isActive && !isDone && <div style={{ fontSize: 10, color: "#534AB7", marginTop: 2, fontWeight: 600 }}>【現在撮影中】</div>}
             </div>
           );
         })}
@@ -789,20 +801,7 @@ export default function FiveAngle() {
           --c-teal-light: #E1F5EE;
           --c-teal-dark: #0F6E56;
         }
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --c-surface: #1c1c1e;
-            --c-bg: #111113;
-            --c-border: rgba(255,255,255,.11);
-            --c-text: #f0f0f2;
-            --c-text2: #a0a0a2;
-            --c-text3: #68686a;
-            --c-purple-light: #26215C;
-            --c-purple-dark: #AFA9EC;
-            --c-teal-light: #04342C;
-            --c-teal-dark: #5DCAA5;
-          }
-        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         input[type=number] { outline: none; }
         input[type=number]:focus { border-color: #534AB7 !important; }
